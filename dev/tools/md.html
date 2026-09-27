@@ -172,7 +172,7 @@ body.su-view-html #htmlPreview { display: block; }
 .find-bar .icon-btn svg { width: 14px; height: 14px; }
 
 /* Preview article */
-.preview-article { width: 100%; max-width: 820px; margin: 0 auto; line-height: 1.7; font-size: 15px; color: var(--text); }
+.preview-article { width: 100%; max-width: var(--su-reading-width, 800px); margin: 0 auto; line-height: 1.7; font-size: 15px; color: var(--text); }
 .preview-article h1, .preview-article h2, .preview-article h3, .preview-article h4, .preview-article h5, .preview-article h6 { color: var(--text); line-height: 1.3; margin-top: 1.4em; margin-bottom: .5em; position: relative; }
 .preview-article h1:first-child, .preview-article h2:first-child, .preview-article h3:first-child { margin-top: 0; }
 .preview-article h1 { font-size: 1.9em; border-bottom: 1px solid var(--border); padding-bottom: .3em; }
@@ -264,9 +264,15 @@ html.su-loading #emptyState { display: none; }
 
 /* Options popover */
 .options-anchor { position: relative; display: inline-flex; }
-.options-popover { margin: 0; min-width: 260px; max-width: min(360px, calc(100vw - 24px)); padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+.options-popover { margin: 0; min-width: 260px; max-width: min(360px, calc(100vw - 24px)); max-height: calc(100dvh - 72px); overflow-y: auto; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
 .options-popover h4 { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin: 0 0 10px; }
+.options-popover h4:not(:first-child) { margin-top: 16px; }
 .options-popover label { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; cursor: pointer; font-size: 13px; color: var(--text); line-height: 1.4; }
+.options-popover .width-label { display: block; padding: 0 0 6px; font-weight: 600; }
+.options-popover .width-custom { display: block; margin-top: 6px; }
+.options-popover .width-custom[hidden] { display: none; }
+.options-popover select, .options-popover input[type="number"] { width: 100%; padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font: 13px var(--font); }
+.options-popover :is(select, input[type="number"]):focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .options-popover input[type="checkbox"] { accent-color: var(--primary); cursor: pointer; margin-top: 2px; flex-shrink: 0; }
 .options-popover .opt-desc { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; overflow-wrap: anywhere; }
 .options-popover .opt-desc code { font-family: var(--mono); font-size: 10px; background: var(--surface-hover); padding: 0 4px; border-radius: 3px; }
@@ -382,12 +388,23 @@ html.su-loading #emptyState { display: none; }
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 </button>
                 <div class="options-anchor">
-                    <button id="optionsBtn" class="btn btn-sm" commandfor="optionsPopover" command="toggle-popover" aria-haspopup="true" title="HTML export options">
+                    <button id="optionsBtn" class="btn btn-sm" commandfor="optionsPopover" command="toggle-popover" aria-haspopup="true" title="Document options">
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
-                        <span class="opt-label">HTML options</span>
+                        <span class="opt-label">Options</span>
                     </button>
-                    <div id="optionsPopover" popover class="options-popover" role="dialog" aria-label="HTML export options">
-                        <h4>HTML export options</h4>
+                    <div id="optionsPopover" popover class="options-popover" role="dialog" aria-label="Document options">
+                        <h4>Reading layout</h4>
+                        <label class="width-label" for="optReadingWidth">Reading width</label>
+                        <select id="optReadingWidth">
+                            <option value="800">Comfortable (800px)</option>
+                            <option value="1100">Wide (1100px)</option>
+                            <option value="full">Full width</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <label class="width-custom" id="optReadingCustomWrap" for="optReadingCustom" hidden>Custom width (px)
+                            <input type="number" id="optReadingCustom" min="320" max="2400" step="1" value="800" inputmode="numeric">
+                        </label>
+                        <h4>Exported HTML features</h4>
                         <label>
                             <input type="checkbox" id="optToc" checked>
                             <span>Table of contents
@@ -627,6 +644,9 @@ const els = {
     urlInput: $('urlInput'),
     optionsBtn: $('optionsBtn'),
     optionsPopover: $('optionsPopover'),
+    optReadingWidth: $('optReadingWidth'),
+    optReadingCustomWrap: $('optReadingCustomWrap'),
+    optReadingCustom: $('optReadingCustom'),
     optToc: $('optToc'),
     optPdf: $('optPdf'),
     optFind: $('optFind'),
@@ -1380,8 +1400,44 @@ if (!('popover' in HTMLElement.prototype) || !('commandForElement' in HTMLButton
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
 }
 
+const READING_WIDTH_MIN = 320;
+const READING_WIDTH_MAX = 2400;
+let customReadingWidth = 800;
+
+function normalizeReadingWidth(value) {
+    if (value === 'full') return 'full';
+    const width = Number(value);
+    return Number.isInteger(width) && width >= READING_WIDTH_MIN && width <= READING_WIDTH_MAX ? width : 800;
+}
+
+function readReadingWidth() {
+    return els.optReadingWidth.value === 'custom' ? customReadingWidth : normalizeReadingWidth(els.optReadingWidth.value);
+}
+
+function applyReadingWidth() {
+    const width = readReadingWidth();
+    document.documentElement.style.setProperty('--su-reading-width', width === 'full' ? 'none' : `${width}px`);
+    if (viewMode === 'html') renderHtmlPreview();
+}
+
+els.optReadingWidth.addEventListener('change', () => {
+    els.optReadingCustomWrap.hidden = els.optReadingWidth.value !== 'custom';
+    applyReadingWidth();
+    if (!els.optReadingCustomWrap.hidden) els.optReadingCustom.focus();
+});
+els.optReadingCustom.addEventListener('input', () => {
+    const width = Number(els.optReadingCustom.value);
+    if (els.optReadingCustom.value.trim() && Number.isInteger(width) && width >= READING_WIDTH_MIN && width <= READING_WIDTH_MAX) {
+        customReadingWidth = width;
+        applyReadingWidth();
+    }
+});
+els.optReadingCustom.addEventListener('change', () => {
+    els.optReadingCustom.value = String(customReadingWidth);
+});
+
 function readOptions() {
-    return { toc: els.optToc.checked, pdf: els.optPdf.checked, find: els.optFind.checked, source: els.optSource.checked };
+    return { toc: els.optToc.checked, pdf: els.optPdf.checked, find: els.optFind.checked, source: els.optSource.checked, readingWidth: readReadingWidth() };
 }
 for (const opt of [els.optToc, els.optPdf, els.optFind, els.optSource]) {
     opt.addEventListener('change', () => { if (viewMode === 'html') renderHtmlPreview(); });
@@ -1637,6 +1693,7 @@ const SUN_ICON_SVG = `<svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" v
 const MOON_ICON_SVG = `<svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M4.05 12.95A6.982 6.982 0 0 1 2 8c0-1.79.684-3.583 2.05-4.95A6.982 6.982 0 0 1 9 1a1 1 0 0 1 .708 1.707 4.982 4.982 0 0 0-1.465 3.536 4.98 4.98 0 0 0 1.465 3.535 4.98 4.98 0 0 0 3.535 1.465 1 1 0 0 1 .707 1.707A6.981 6.981 0 0 1 9 15a6.983 6.983 0 0 1-4.95-2.05Zm.708-.707A5.983 5.983 0 0 0 9 14c1.535 0 3.07-.586 4.242-1.757a5.98 5.98 0 0 1-4.018-1.545L9 10.485a5.982 5.982 0 0 1-1.758-4.242A5.986 5.986 0 0 1 9 2a5.983 5.983 0 0 0-4.243 1.757A5.98 5.98 0 0 0 3 8l.006.288a5.978 5.978 0 0 0 1.75 3.955Z"/></svg>`;
 const PDF_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 1a.75.75 0 0 1 .75.75v8.69l2.97-2.97a.75.75 0 0 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 8.53a.75.75 0 1 1 1.06-1.06l2.97 2.97V1.75A.75.75 0 0 1 8 1Z"/><path d="M2 13.5a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 13.5Z"/></svg>`;
 const FIND_ICON_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`;
+const READING_ICON_SVG = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h12M4 18h16"/><path d="m18 10 2 2-2 2"/></svg>`;
 
 const FONT_LINKS = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1677,6 +1734,8 @@ ${watermarkFooter('Generated with')}
 
 async function generateOutput(opts) {
     const o = opts || readOptions();
+    const readingWidth = normalizeReadingWidth(o.readingWidth);
+    const cssReadingWidth = readingWidth === 'full' ? 'none' : `${readingWidth}px`;
     const content = await render(markdown);
     const title = extractTitle(content);
     const katexLink = content.includes('class="katex') ? KATEX_CSS_LINK + '\n' : '';
@@ -1684,9 +1743,21 @@ async function generateOutput(opts) {
     const pdfBtnChrome = o.pdf ? `<button id="pdf-btn" aria-label="Download PDF" title="Download as PDF">${PDF_ICON_SVG}</button>` : '';
     const findBtnChrome = o.find ? `<button id="find-btn" aria-label="Find in page" title="Find in page (Ctrl/Cmd+F)">${FIND_ICON_SVG}</button>` : '';
     const findBarChrome = o.find ? `<div id="su-find" role="search">${FIND_ICON_SVG}<input type="text" placeholder="Find in page" aria-label="Find in page" autocomplete="off" spellcheck="false"><span class="su-find-count">0/0</span><button class="su-find-prev" aria-label="Previous match" title="Previous (Shift+Enter)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m11 10-3-3-3 3"/></svg></button><button class="su-find-next" aria-label="Next match" title="Next (Enter)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 6 3 3 3-3"/></svg></button><button class="su-find-close" aria-label="Close find" title="Close (Esc)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>` : '';
+    const readingSettingsChrome = `<div id="reading-settings" popover role="dialog" aria-label="Reading settings">
+  <p class="reader-settings-title">Reading settings</p>
+  <label for="reader-width-select">Reading width</label>
+  <select id="reader-width-select">
+    <option value="800">Comfortable (800px)</option>
+    <option value="1100">Wide (1100px)</option>
+    <option value="full">Full width</option>
+    <option value="custom">Custom</option>
+  </select>
+  <div id="reader-custom-wrap" hidden><label for="reader-custom-width">Custom width (px)</label><input id="reader-custom-width" type="number" min="320" max="2400" step="1" value="800" inputmode="numeric"></div>
+  <button id="reader-width-reset" type="button">Use document default</button>
+</div>`;
     const sourceTag = o.source ? embedSourceTag(markdown) : '';
     return `<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" style="--su-reading-width: ${cssReadingWidth}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1698,7 +1769,8 @@ ${outputCSS()}
 </head>
 <body>
 <div id="progress"></div>
-<div id="top-tools">${findBtnChrome}${pdfBtnChrome}<button id="theme-toggle" aria-label="Toggle theme">${SUN_ICON_SVG}${MOON_ICON_SVG}</button></div>
+<div id="top-tools">${findBtnChrome}${pdfBtnChrome}<button id="reading-settings-btn" type="button" commandfor="reading-settings" command="toggle-popover" aria-haspopup="dialog" aria-label="Reading settings" title="Reading settings">${READING_ICON_SVG}</button><button id="theme-toggle" aria-label="Toggle theme">${SUN_ICON_SVG}${MOON_ICON_SVG}</button></div>
+${readingSettingsChrome}
 <button id="btt" aria-label="Back to top">\u2191</button>
 ${tocChrome}
 ${findBarChrome}
@@ -1707,7 +1779,7 @@ ${content}
 </article></main>
 ${watermarkFooter('Powered by')}
 <script>
-${outputJS({ toc: o.toc, pdf: o.pdf, find: o.find })}
+${outputJS({ toc: o.toc, pdf: o.pdf, find: o.find, readingWidth })}
 <\/script>
 ${sourceTag}
 </body>
@@ -1748,7 +1820,8 @@ function printCSS() {
 @media print {
   html, body { background: #fff !important; color: #1f2937 !important; }
   body { font-size: 11pt; line-height: 1.6; }
-  main { max-width: none; margin: 0; padding: 0; }
+  main, body.has-toc main { margin: 0; padding: 0; }
+  main article { max-width: none; }
   article h1 { string-set: doctitle content(text); break-after: avoid-page; margin-top: 0; }
   article h2, article h3, article h4, article h5, article h6 { break-after: avoid-page; }
   article h2 + p, article h3 + p, article h4 + p { break-before: avoid-page; }
@@ -1815,7 +1888,18 @@ body {
 #top-tools button:hover { transform: scale(1.1); color: var(--text); }
 #top-tools svg { width: 16px; height: 16px; }
 #theme-toggle svg, #pdf-btn svg { fill: currentColor; }
-#find-btn svg { fill: none; stroke: currentColor; }
+#find-btn svg, #reading-settings-btn svg { fill: none; stroke: currentColor; }
+#reading-settings { display: none; position: fixed; inset: 62px 16px auto auto; width: 280px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 78px); overflow-y: auto; margin: 0; padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); box-shadow: 0 8px 24px var(--shadow); z-index: 200; }
+#reading-settings:popover-open { display: block; }
+#reading-settings.su-open { display: block; }
+#reading-settings .reader-settings-title { font: 700 13px/1.4 "Inter", sans-serif; margin: 0 0 12px; }
+#reading-settings label { display: block; font-size: 13px; font-weight: 600; margin: 0 0 6px; }
+#reading-settings select, #reading-settings input { display: block; width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font: 13px "Inter", sans-serif; }
+#reading-settings #reader-custom-wrap { margin-top: 12px; }
+#reading-settings #reader-custom-wrap[hidden] { display: none; }
+#reading-settings #reader-width-reset { width: 100%; margin-top: 14px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-alt); color: var(--text); font: 13px "Inter", sans-serif; text-align: center; cursor: pointer; }
+#reading-settings #reader-width-reset:hover { background: var(--border); }
+#reading-settings :is(select, input, button):focus-visible, #top-tools button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 #su-find { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 200; display: none; align-items: center; gap: 4px; padding: 6px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 6px 24px var(--shadow); }
 #su-find.open { display: flex; }
 #su-find > svg { width: 15px; height: 15px; flex: none; color: var(--text-muted); }
@@ -1839,8 +1923,9 @@ article mark.su-find-hit.current { background: #fed047; color: #161b22; }
 #toc li.sub { padding-left: 14px; }
 #toc a { color: var(--text-muted); text-decoration: none; transition: color .15s; }
 #toc a:hover { color: var(--link); }
-main { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
-@media (min-width: 1200px) { body.has-toc main { margin-left: 280px; margin-right: auto; } }
+main { width: 100%; padding: 48px 24px 80px; }
+main article { width: 100%; max-width: var(--su-reading-width, 800px); margin: 0 auto; }
+@media (min-width: 1200px) { body.has-toc main { padding-left: 280px; } }
 @media (max-width: 1199px) { #toc { display: none !important; } }
 article h1, article h2, article h3, article h4, article h5, article h6 { color: var(--heading); line-height: 1.3; margin-top: 1.6em; margin-bottom: .5em; position: relative; }
 article h1 { font-size: 2em; border-bottom: 2px solid var(--border); padding-bottom: .3em; margin-top: 0; }
@@ -1947,16 +2032,18 @@ article .su-mermaid-error-msg { color: #cf222e; }
 [data-theme="dark"] .hljs-operator { color: #ff7b72; }
 
 @media print {
-  #top-tools, #su-find, #theme-toggle, #btt, #progress, #toc, #pdf-btn, .copy-btn { display: none !important; }
+  #top-tools, #reading-settings, #su-find, #theme-toggle, #btt, #progress, #toc, #pdf-btn, .copy-btn { display: none !important; }
   body { color: #000; background: #fff; }
   article pre { border: 1px solid #ddd; }
   article .su-anchor { display: none; }
-  main { margin: 0 auto; }
+  main, body.has-toc main { padding: 0; }
+  main article { max-width: none; }
   .su-watermark { opacity: 0.4; }
 }`;
 }
 
 function outputJS(opts) {
+    const readerDefault = normalizeReadingWidth(opts && opts.readingWidth);
     const tocBlock = opts && opts.toc ? `
   const headings = document.querySelectorAll("article h2, article h3");
   const tocEl = document.getElementById("toc");
@@ -2132,6 +2219,54 @@ function outputJS(opts) {
     if (saved) setTheme(saved);
     else if (window.matchMedia("(prefers-color-scheme: dark)").matches) setTheme("dark");
   } catch {}
+
+  const defaultReadingWidth = ${JSON.stringify(readerDefault)};
+  const readerButton = document.getElementById("reading-settings-btn");
+  const readerPanel = document.getElementById("reading-settings");
+  const readerSelect = document.getElementById("reader-width-select");
+  const readerCustomWrap = document.getElementById("reader-custom-wrap");
+  const readerCustomInput = document.getElementById("reader-custom-width");
+  let lastCustomWidth = typeof defaultReadingWidth === "number" ? defaultReadingWidth : 800;
+
+  const setReadingWidth = (width) => {
+    root.style.setProperty("--su-reading-width", width === "full" ? "none" : width + "px");
+  };
+  const syncReaderControls = (width) => {
+    readerSelect.value = width === "full" ? "full" : width === 800 || width === 1100 ? String(width) : "custom";
+    readerCustomWrap.hidden = readerSelect.value !== "custom";
+    if (typeof width === "number") { lastCustomWidth = width; readerCustomInput.value = String(width); }
+  };
+  syncReaderControls(defaultReadingWidth);
+  readerSelect.addEventListener("change", () => {
+    readerCustomWrap.hidden = readerSelect.value !== "custom";
+    setReadingWidth(readerSelect.value === "custom" ? lastCustomWidth : readerSelect.value === "full" ? "full" : Number(readerSelect.value));
+    if (!readerCustomWrap.hidden) readerCustomInput.focus();
+  });
+  readerCustomInput.addEventListener("input", () => {
+    const width = Number(readerCustomInput.value);
+    if (readerCustomInput.value.trim() && Number.isInteger(width) && width >= 320 && width <= 2400) {
+      lastCustomWidth = width;
+      setReadingWidth(width);
+    }
+  });
+  readerCustomInput.addEventListener("change", () => { readerCustomInput.value = String(lastCustomWidth); });
+  document.getElementById("reader-width-reset").addEventListener("click", () => {
+    setReadingWidth(defaultReadingWidth);
+    syncReaderControls(defaultReadingWidth);
+  });
+
+  if (!("commandForElement" in HTMLButtonElement.prototype)) {
+    const hasPopover = typeof readerPanel.showPopover === "function";
+    readerButton.addEventListener("click", () => {
+      if (hasPopover) readerPanel.matches(":popover-open") ? readerPanel.hidePopover() : readerPanel.showPopover();
+      else { readerPanel.classList.toggle("su-open"); readerButton.setAttribute("aria-expanded", String(readerPanel.classList.contains("su-open"))); }
+    });
+    if (!hasPopover) {
+      const close = () => { readerPanel.classList.remove("su-open"); readerButton.setAttribute("aria-expanded", "false"); };
+      document.addEventListener("click", (e) => { if (e.target !== readerButton && !readerButton.contains(e.target) && !readerPanel.contains(e.target)) close(); });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape" && readerPanel.classList.contains("su-open")) { close(); readerButton.focus(); } });
+    }
+  }
 ${tocBlock}${pdfBlock}${findBlock}
   for (const pre of document.querySelectorAll("pre")) {
     const btn = document.createElement("button");

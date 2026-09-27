@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
@@ -74,6 +76,89 @@ test.describe(`${tool.name} (${tool.path})`, () => {
     await expect(frame.locator('#su-find.open')).toBeVisible();
     await frame.locator('#su-find input').fill('Body');
     await expect(frame.locator('article mark.su-find-hit')).toContainText('Body');
+  });
+
+  test('reading width presets and custom value match Preview, HTML view, and export', async ({ page }) => {
+    await page.goto(tool.path);
+    await setMarkdown(page, '# Width test\n\nA readable paragraph.');
+    const article = page.locator('#previewArticle');
+    const htmlArticle = page.frameLocator('#htmlPreview').locator('article');
+    await expect(article).toHaveCSS('max-width', '800px');
+
+    await page.getByRole('button', { name: 'Options', exact: true }).click();
+    const width = page.getByLabel('Reading width');
+    await width.selectOption('1100');
+    await expect(article).toHaveCSS('max-width', '1100px');
+    await page.getByRole('button', { name: 'HTML', exact: true }).click();
+    await expect(htmlArticle).toHaveCSS('max-width', '1100px');
+
+    await page.getByRole('button', { name: 'Options', exact: true }).click();
+    await width.selectOption('full');
+    await expect(article).toHaveCSS('max-width', 'none');
+    await expect(htmlArticle).toHaveCSS('max-width', 'none');
+
+    await width.selectOption('custom');
+    const custom = page.getByLabel('Custom width (px)');
+    await expect(custom).toBeVisible();
+    await custom.fill('960');
+    await expect(article).toHaveCSS('max-width', '960px');
+    await expect(htmlArticle).toHaveCSS('max-width', '960px');
+    await custom.fill('9999');
+    await custom.press('Tab');
+    await expect(custom).toHaveValue('960');
+    await expect(htmlArticle).toHaveCSS('max-width', '960px');
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Export', exact: true }).click();
+    await page.getByRole('menuitem', { name: 'Download HTML' }).click();
+    const output = await readFile(await (await downloadPromise).path(), 'utf8');
+    expect(output).toContain('style="--su-reading-width: 960px"');
+    expect(output).not.toContain('--su-reading-width: 9999px');
+  });
+
+  test('exported HTML lets readers change width without changing its default', async ({ page }) => {
+    await page.goto(tool.path);
+    await setMarkdown(page, '# Reader\n\n## First\n\nA\n\n## Second\n\nB\n\n## Third\n\nC');
+    await page.getByRole('button', { name: 'Options', exact: true }).click();
+    await page.getByLabel('Reading width').selectOption('1100');
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Export', exact: true }).click();
+    await page.getByRole('menuitem', { name: 'Download HTML' }).click();
+    const output = await readFile(await (await downloadPromise).path(), 'utf8');
+
+    await page.route('https://example.test/exported.html', (route) =>
+      route.fulfill({ contentType: 'text/html', body: output }),
+    );
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('https://example.test/exported.html');
+    const article = page.locator('main article');
+    await expect(article).toHaveCSS('max-width', '1100px');
+    await expect(page.locator('#toc')).toBeVisible();
+    await page.getByRole('button', { name: 'Reading settings' }).click();
+    await page.getByLabel('Reading width').selectOption('full');
+    await expect(article).toHaveCSS('max-width', 'none');
+    const tocBox = await page.locator('#toc').boundingBox();
+    const articleBox = await article.boundingBox();
+    expect(tocBox && articleBox && articleBox.x >= tocBox.x + tocBox.width + 16).toBeTruthy();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1440);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator('#toc')).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    const settingsBox = await page.locator('#reading-settings').boundingBox();
+    expect(settingsBox && settingsBox.x >= 0 && settingsBox.x + settingsBox.width <= 390).toBeTruthy();
+
+    await page.getByRole('button', { name: 'Use document default' }).click();
+    await expect(article).toHaveCSS('max-width', '1100px');
+    await page.getByLabel('Reading width').selectOption('custom');
+    await page.getByLabel('Custom width (px)').fill('900');
+    await expect(article).toHaveCSS('max-width', '900px');
+    await page.reload();
+    await expect(article).toHaveCSS('max-width', '1100px');
+
+    await page.emulateMedia({ media: 'print' });
+    await expect(article).toHaveCSS('max-width', 'none');
+    await expect(page.locator('#reading-settings')).toBeHidden();
   });
 
   test('GitHub alerts and ==highlights== are enhanced', async ({ page }) => {

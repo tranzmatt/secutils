@@ -58,9 +58,13 @@ name used for the page title and downloaded filenames.
   Markdown round-tripped through the fragment.
 - **Export** - **Download HTML** (single self-contained file), **Download
   PDF** (`Ctrl/Cmd+P`, paginated via Paged.js), or **Copy HTML**.
-- **HTML options** (gear) - toggles that affect the self-contained HTML
-  export: table of contents, PDF export button, in-page find, and embedding
-  the Markdown source.
+- **Options** (gear) - set the reading width for Preview and exported HTML:
+  Comfortable (800px, default), Wide (1100px), Full width, or a custom
+  320–2400px width. The same panel controls exported HTML features: table of
+  contents, PDF export button, in-page find, and embedded Markdown source.
+- **Reading settings in exported HTML** - readers can change the width or
+  restore the document default from the toolbar. Their choice lasts for the
+  current page visit; reloading restores the width selected at export time.
 
 ## Open paths
 
